@@ -20,3 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('orders', OrderController::class);
+
+Route::post('orders/{id}/add', [OrderController::class, 'addProductToOrder']);

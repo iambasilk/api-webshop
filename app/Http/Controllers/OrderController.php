@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\Product;
+use App\Models\Customer;
+
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
@@ -109,5 +112,26 @@ class OrderController extends Controller
 
         return response()->noContent();
     }
-    
+
+    public function addProductToOrder(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'product_id' => ['required', 'exists:products,id'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $order = Order::where('id', $id)
+            ->where('payed', false)
+            ->firstOrFail();
+
+        $product = Product::findOrFail($request->product_id);
+
+        $order->products()->attach($product);
+
+        return response()->json(['message' => 'Sucessfully attached product to the order.']);
+    }
+
 }

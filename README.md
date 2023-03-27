@@ -2,10 +2,11 @@
 
 Simplified mini webshop consisting of customers, products and orders and their endpoints.
 
-## Clone the repository:
+## Clone the repository and checkout branch:
 
 ```bash
 git clone https://github.com/iambasilk/mini-webshop.git
+git checkout basil.k_feature_import-masterdata-command
 ```
 
 ## Install dependencies:
@@ -48,6 +49,12 @@ php artisan migrate
 php artisan serve
 ```
 
+## Run the import master data command and check the logs:
+
+```
+php artisan import:masterdata
+```
+
 ## Test the API endpoints using a Postman or Hoppscotch. Here are the available endpoints:
 
-Import `storage\app\postman_collections\API_Web_shop.postman_collection.json` to postman and test the endpoints
+Import `\postman_collections\API_Web_shop.postman_collection.json` to postman and test the endpoints

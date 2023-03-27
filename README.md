@@ -2,11 +2,10 @@
 
 Simplified mini webshop consisting of customers, products and orders and their endpoints.
 
-## Clone the repository and checkout branch:
+## Clone the repository:
 
 ```bash
 git clone https://github.com/iambasilk/api-webshop.git
-git checkout basil.k_feature_import-masterdata-command
 ```
 
 ## Install dependencies:

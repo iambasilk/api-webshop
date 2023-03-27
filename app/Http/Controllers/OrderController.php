@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Customer;
-
-use Illuminate\Support\Facades\Validator;
+use App\Models\Payment;
+use App\Payments\PaymentProviderFactory;
+use App\Payments\PaymentProcessor;
 
 class OrderController extends Controller
 {
@@ -131,7 +133,52 @@ class OrderController extends Controller
 
         $order->products()->attach($product);
 
-        return response()->json(['message' => 'Sucessfully attached product to the order.']);
+        return response()->json(['message' => 'Successfully attached product to the order.']);
+    }
+
+    public function payOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->payed) {
+            return response()->json([
+                'message' => 'The order is already payed'
+            ], 400);
+        }
+
+        $customer = Customer::where('email', $request->customer_email)->first();
+        if ($customer->id !== $order->customer_id) {
+            return response()->json([
+                'message' => 'Not authorized to access this order.'
+            ], 403);
+        }
+
+        $superPayPaymentProvider = PaymentProviderFactory::createPaymentProvider('SUPER_PAY');
+        $paymentProcessor = new PaymentProcessor($superPayPaymentProvider);
+        $paymentSuccessful = $paymentProcessor->processPayment($order->id, $request->value, $customer->email);
+
+        // Store payment details to payment table
+        $payment = new Payment();
+        $payment->paymentable_id = $order->id;
+        $payment->paymentable_type = Order::class;
+        $payment->amount = $request->value;
+        $payment->user_id = $order->customer_id;
+        $payment->payment_provider = 'SUPER_PAY';
+        $payment->status = $paymentSuccessful ? 'SUCCESS' : 'FAILED';
+        $payment->save();
+
+        if ($paymentSuccessful) {
+            $order->payed = true;
+            $order->save();
+
+            return response()->json([
+                'message' => 'Payment Successful'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Insufficient Funds'
+            ], 400);
+        }
     }
 
 }

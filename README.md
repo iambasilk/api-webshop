@@ -5,7 +5,7 @@ Simplified mini webshop consisting of customers, products and orders and their e
 ## Clone the repository:
 
 ```bash
-git clone https://github.com/iambasilk/api-webshop.git
+git clone https://github.com/iambasilk/mini-webshop.git
 ```
 
 ## Install dependencies:

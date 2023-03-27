@@ -19,7 +19,6 @@ composer install
 
 ```
 php artisan key:generate
-
 ```
 
 ## Set up env values in the .env file
